@@ -2,7 +2,8 @@ import { useState } from "react";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { StatsOverview } from "@/components/StatsOverview";
 import { StudentCard } from "@/components/StudentCard";
-import { sampleStudents } from "@/data/sampleData";
+import { StudentDetailsModal } from "@/components/StudentDetailsModal";
+import { sampleStudents, StudentProgress } from "@/data/sampleData";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, Grid, List } from "lucide-react";
@@ -11,14 +12,19 @@ const Index = () => {
   const [students] = useState(sampleStudents);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedStudent, setSelectedStudent] = useState<StudentProgress | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleViewDetails = (studentId: string) => {
-    console.log("Viewing details for student:", studentId);
-    // This would open a detailed view modal or navigate to student details
+    const student = students.find(s => s.id === studentId);
+    if (student) {
+      setSelectedStudent(student);
+      setIsModalOpen(true);
+    }
   };
 
   return (
@@ -94,6 +100,13 @@ const Index = () => {
             <p className="text-muted-foreground">Try adjusting your search terms or filters.</p>
           </div>
         )}
+
+        {/* Student Details Modal */}
+        <StudentDetailsModal 
+          student={selectedStudent}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       </div>
     </div>
   );
